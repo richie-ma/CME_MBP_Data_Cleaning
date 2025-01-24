@@ -1,10 +1,7 @@
 #########################################################################
-## This code is used to extract settlement price at each
-## trading day.
+## This code is used to extract daily statistics at each trading day
 ## Richie R. Ma, ruchuan2@illinois.edu, UIUC, ACE DEPT
 ####################################################################
-
-setwd("C:/Users/ruchuan2/Box/Soybean_MBO")
 
 rm(list=ls())
 
@@ -23,8 +20,6 @@ for (i in 440:444){
   
   if(date[i] < "2015-11-20"){
 
-#test <- readLines("C:/Users/ruchuan2/Box/soybean/xcbt_md_zc_fut_20140122_r_00184")
-#Index <- gsub("\001",",",test)
   Index <- str_replace_all(data, "\001",",") 
 rm(data)
 
@@ -141,7 +136,7 @@ for (k in 1:length(contract)) {
   if(dim(settle.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/settle/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -191,7 +186,7 @@ for (k in 1:length(contract)) {
   if(dim(high_px.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/high_px/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -240,7 +235,7 @@ for (k in 1:length(contract)) {
   if(dim(low_px.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/low_px/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -288,7 +283,7 @@ for (k in 1:length(contract)) {
   if(dim(high_bid.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/high_bid/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -338,7 +333,7 @@ for (k in 1:length(contract)) {
   if(dim(low_offer.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/low_offer/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -385,7 +380,7 @@ for (k in 1:length(contract)) {
   if(dim(volume.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/volume/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -432,7 +427,7 @@ for (k in 1:length(contract)) {
   if(dim(open_int.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/open_int/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -477,7 +472,7 @@ rm(open_int)
   #if(dim(elec_volume.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-   # new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/elec_volume","/",contract[k]))
+   # new_fol <- file.path(paste0("saving path","/",contract[k]))
     #if(!dir.exists(new_fol)){
     #  dir.create(new_fol)
   #  }
@@ -525,7 +520,7 @@ for (k in 1:length(contract)) {
   if(dim(limit.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/limit/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -609,7 +604,7 @@ for (k in 1:length(contract)) {
   if(dim(open.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/open/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -658,7 +653,7 @@ for (k in 1:length(contract)) {
   if(dim(settle.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/settle/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -710,7 +705,7 @@ for (k in 1:length(contract)) {
   if(dim(high_px.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/high_px/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -758,7 +753,7 @@ for (k in 1:length(contract)) {
   if(dim(low_px.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/low_px/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -806,7 +801,7 @@ for (k in 1:length(contract)) {
   if(dim(high_bid.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/high_bid/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -853,7 +848,7 @@ for (k in 1:length(contract)) {
   if(dim(low_offer.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/low_offer/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -900,7 +895,7 @@ for (k in 1:length(contract)) {
   if(dim(volume.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/volume/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -947,7 +942,7 @@ for (k in 1:length(contract)) {
   if(dim(open_int.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/open_int/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -994,7 +989,7 @@ for (k in 1:length(contract)) {
   if(dim(elec_volume.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/elec_volume/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -1050,7 +1045,7 @@ for (k in 1:length(contract)) {
   if(dim(limit.sf )[1]!=0){
     ## delete the file with empty size and create new folders to save data to each folders
     ## create multiple folders to save the data
-    new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/soybean/daily stat/limit/",contract[k]))
+    new_fol <- file.path(paste0("saving path",contract[k]))
     if(!dir.exists(new_fol)){
       dir.create(new_fol)
     }
@@ -1064,7 +1059,7 @@ rm(limit)
 }
 }
 }
-######################################################
+
 
 
 
