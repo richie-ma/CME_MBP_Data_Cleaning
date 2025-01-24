@@ -1,6 +1,5 @@
 ## this file is used to clean the limit order book
 
-setwd("C:/Users/ruchuan2/Box/Corn")
 
 rm(list=ls())
 
@@ -19,7 +18,7 @@ date <- as.Date(str_sub(name,1,8),"%Y%m%d")
 
 Date <- list()
 week_seq <- c()
-for (i in 339:339){
+for (i in 1:length(name)){
   print(name[i])
   file <- name[i]
   #date <- as.Date(str_sub(name[i],1,8),"%Y%m%d")
@@ -33,9 +32,6 @@ for (i in 339:339){
   ## loop starts
   ## test data
   
-  #test <- readLines("C:/Users/ruchuan2/Box/live cattle/xcme_md_le_fut_20160329_r_00441")
-  #Index <- gsub("\001",",",test) # delete all "\001" for each tag and replace it with "," (comma)
-  #rm(test)
   
   Index <- gsub("\001",",",data) # delete all "\001" for each tag and replace it with "," (comma)
   rm(data)
@@ -206,7 +202,7 @@ for (i in 339:339){
       ## delete the file with empty size and create new folders to save data to each folders
       ## create multiple folders to save the data
       if(dim(message_sf)[1]!=0){
-        new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/Corn message","/",contract[j]))
+        new_fol <- file.path(paste0("saving path","/",contract[j]))
         
         if(!dir.exists(new_fol)){
           dir.create(new_fol)
@@ -215,19 +211,19 @@ for (i in 339:339){
         
         if(i==339){
         fname <- file.path(new_fol,
-                           paste0( "xcbt_md_zc_fut_", substr(name[i], 1, 8), "_r_", "48879", "_",contract[j],".rda"))
+                           paste0( "header", substr(name[i], 1, 8), "_r_", "48879", "_",contract[j],".rda"))
         } else{
           
           if(epiweek(date)==epiweek(Date[[i-1]])){
             week_seq1 <- week_seq[i-1]
             week_seq[i] <- week_seq[i-1]
             fname <- file.path(new_fol,
-                               paste0("xcbt_md_zc_fut_", substr(name[i], 1, 8), "_r_", week_seq1, "_",contract[j],".rda"))
+                               paste0("header", substr(name[i], 1, 8), "_r_", week_seq1, "_",contract[j],".rda"))
             
           } else{
             
             fname <- file.path(new_fol,
-                               paste0("xcbt_md_zc_fut_", substr(name[i], 1, 8), "_r_", week_seq[i], "_",contract[j],".rda"))
+                               paste0("header", substr(name[i], 1, 8), "_r_", week_seq[i], "_",contract[j],".rda"))
             
           }
           
