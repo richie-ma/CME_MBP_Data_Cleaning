@@ -5,7 +5,6 @@
 ## Richie R. Ma, ruchuan2@illinois.edu
 ##############################################################################
 
-setwd("C:/Users/ruchuan2/Box/Corn")
 
 rm(list=ls())
 
@@ -17,7 +16,7 @@ name <- list.files(pattern = "xcbt_md_zc_")
 date <-  as.Date(substr(name,16,23), "%Y%m%d")
 
 
-for (i in 83:83){
+for (i in 1:length(name)){
   print(name[i])
   MDP <- name[i]
   input <- MDP
@@ -100,7 +99,7 @@ for (i in 83:83){
       
     }
     
-    save(Session_info, file=paste0("C:/Users/ruchuan2/Box/pre-open auction project/Sessioninfo/Corn/",date[i], ".rda"))
+    save(Session_info, file=paste0("saving path",date[i], ".rda"))
     
     ### simulated buy and sell
     
@@ -245,7 +244,7 @@ for (i in 83:83){
     
     setkey(Simulated, Code, Seq)
     
-    save(Simulated, file=paste0("C:/Users/ruchuan2/Box/pre-open auction project/simulation_info/Corn/",date[i], ".rda"))
+    save(Simulated, file=paste0("saving path",date[i], ".rda"))
     
     }
   }else{
@@ -312,7 +311,7 @@ for (i in 83:83){
       Session_info[, session:=fifelse(TradingStatus==21 & (TradingEvent==0|TradingEvent==4), "preopen", fifelse(TradingStatus==21 & TradingEvent==1, "preopen_nocancel",
                                                                                                                 fifelse(TradingStatus==15, "opening", fifelse(TradingStatus==17, "open", "none"))))]
       
-      save(Session_info, file=paste0("C:/Users/ruchuan2/Box/pre-open auction project/Sessioninfo/Corn_2016/",date[i], ".rda"))
+      save(Session_info, file=paste0("saving path",date[i], ".rda"))
     }
     
   }
