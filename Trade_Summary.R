@@ -1,15 +1,13 @@
 ## trade summary
 
 
-setwd("R:/_RawData/MD/MD_Corn_Fut")
-
 rm(list=ls())
 
 library(data.table)
 library(stringr)
 
 ## batching
-name <- list.files(pattern = "MD_xcbt_zc_fut_eth")
+name <- list.files(pattern = "")
 date <-  as.Date(substr(name,1,8), "%Y%m%d")
 
 for (i in 1:length(name)){
@@ -20,9 +18,6 @@ for (i in 1:length(name)){
   
   if(date[i] < "2015-11-20"){
     ## loop starts##  
-    #test <- readLines("C:/Users/ruchuan2/Box/Corn/xcbt_md_zc_fut_20180402-r-00074")
-    #Index <- gsub("\001",",",test) # delete all "\001" for each tag and replace it with "," (comma)
-    #rm(test)
     
     Index <- gsub("\001",",",data) # delete all "\001" for each tag and replace it with "," (comma)
     rm(data)
@@ -114,9 +109,7 @@ for (i in 1:length(name)){
     }
   } else{
     
-    #test <- readLines("C:/Users/user/Box/Corn/xcbt_md_zc_fut_20151209_r_00097")
-    #Index <- gsub("\001",",",test) # delete all "\001" for each tag and replace it with "," (comma)
-    #rm(test)
+
     
     Index <- str_subset(data, "\001269=2")
     Index <- str_replace_all(Index, "\001",",") 
@@ -205,12 +198,12 @@ for (i in 1:length(name)){
         if(dim(Trade.sf)[1]!=0){
           ## delete the file with empty size and create new folders to save data to each folders
           ## create multiple folders to save the data
-          new_fol <- file.path(paste0("C:/Users/ruchuan2/Box/Corn/transaction","/",contract[k]))
+          new_fol <- file.path(paste0("saving path","/",contract[k]))
           if(!dir.exists(new_fol)){
             dir.create(new_fol)
           }
           fname <- file.path(new_fol,
-                             paste0("xcbt_md_zc_fut_",substr(name[i], 1,8),"_", "r","_",sample(100000,1, replace = F), "_",contract[k],".rda"))
+                             paste0("header",substr(name[i], 1,8),"_", "r","_",sample(100000,1, replace = F), "_",contract[k],".rda"))
           save(Trade.sf, file = fname) ## save all contracts
           
         }
