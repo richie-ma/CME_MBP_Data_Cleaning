@@ -5,27 +5,23 @@
 ## outright orders/implied orders
 
 
-## set working dictionary
-setwd("C:/Users/ruchuan2/OneDrive - University of Illinois - Urbana/Corn_message") 
-
 rm(list=ls())
 
 library(data.table)
 
 
-contract_LOB_folder <- list.files(path = "C:/Users/ruchuan2/OneDrive - University of Illinois - Urbana/Corn_message", pattern = "ZC") ## all the underlying files
+contract_LOB_folder <- list.files(path = "folder path", pattern = "code") ## all the underlying files
 i <- which(contract_LOB_folder=="ZCZ9")
 
-for (i in i:i){
-  contract_all <- list.files(path =paste0("C:/Users/ruchuan2/OneDrive - University of Illinois - Urbana/Corn_message/",contract_LOB_folder[i]), pattern = "xcbt") 
+for (i in 1:length(contract_LOB_folder)){
+  contract_all <- list.files(path =paste0("folder path",contract_LOB_folder[i]), pattern = "exchange code") 
   contract_all_date <- as.Date(substr(contract_all, 16, 23), "%Y%m%d")
   
   
   
   week_seq <- unique(substr(contract_all,27,31))
-  j <- which(week_seq=="74427")
-  
-  for(j in j:j){
+ 
+  for(j in 1:length(week_seq)){
   
     LOB_week <- paste0(subset(contract_all, substr(contract_all,27,31)==week_seq[j]))
     #print(LOB_week)
@@ -33,7 +29,7 @@ for (i in i:i){
     
     for (l in 1:length(LOB_week)) {
       
-      message_all[[l]] <- load(paste0("C:/Users/ruchuan2/OneDrive - University of Illinois - Urbana/Corn_message/",contract_LOB_folder[i],"/" ,LOB_week[l]))
+      message_all[[l]] <- load(paste0("folder path",contract_LOB_folder[i],"/" ,LOB_week[l]))
       message_all[[l]] <- unique(message_sf)
     }
     
@@ -927,13 +923,15 @@ for (i in i:i){
       if(dim(LOB_outright)[1]!=0){
         
         LOB_conso <- as.data.table(LOB_outright)
-        #LOB_conso$MsgSeq <- message_all_outright$MsgSeq
+        LOB_conso$Date <- message_all[, "Date"]
+      LOB_conso$Time <- message_all[, "Time"]
       }
       
       else if(dim(LOB_implied)[1]!=0){
         
         LOB_conso <- as.data.table(LOB_implied)
-        #LOB_conso$MsgSeq <- message_all_implied$MsgSeq
+        LOB_conso$Date <- message_all[, "Date"]
+      LOB_conso$Time <- message_all[, "Time"]
       }
       
     }
@@ -1010,12 +1008,12 @@ for (i in i:i){
       
       
       if(dim(LOB_date)[1]!=0){
-        fold <- file.path(paste0("C:/Users/ruchuan2/OneDrive - University of Illinois - Urbana/Corn_LOB","/",contract_LOB_folder[i]))
+        fold <- file.path(paste0("folder path","/",contract_LOB_folder[i]))
         if(!dir.exists(fold)){
           dir.create(fold)
         }
         fname <- file.path(fold,
-                           paste0("xcbt_md_zc_fut_",date[m],"_","r","_",week_seq[j],"_",contract_LOB_folder[i],".rda"))
+                           paste0("header",date[m],"_","r","_",week_seq[j],"_",contract_LOB_folder[i],".rda"))
         save(LOB_date, file = fname) ## save
       }
     }
