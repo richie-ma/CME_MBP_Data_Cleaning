@@ -1,55 +1,45 @@
-## this file is used to clean the limit order book
 
 
-rm(list=ls())
-
-library(data.table)
-library(lubridate)
-library(dplyr)
-library(stringr)
-
-
-## batching
-## there are two versions of MDP data, one is FIX and another is MBP
-## MBP starts on 11/20/2015
-
-name <- list.files(pattern = "MD")
-date <- as.Date(str_sub(name,1,8),"%Y%m%d")
-
-Date <- list()
-week_seq <- c()
-for (i in 1:length(name)){
-  print(name[i])
-  file <- name[i]
-  #date <- as.Date(str_sub(name[i],1,8),"%Y%m%d")
-  date <- as.Date(str_sub(name[i],1,8),"%Y%m%d")
-  Date[[i]] <- as.Date(str_sub(name[i],1,8),"%Y%m%d")
+quote_message <- function(raw_data_path, date, ...){
+ 
+  date <- as.Date(date)
   
-  input <- file
-  data <- readLines(input)
-  
-  week_seq[i] <- sample(10000:99999,1,replace = F)
-  ## loop starts
-  ## test data
+  if (class(date)!="Date"){
+    
+    stop("date should be in the format as YYYY-MM-DD.")
+    
+  }
   
   
-  Index <- gsub("\001",",",data) # delete all "\001" for each tag and replace it with "," (comma)
-  rm(data)
+  
+  data <- fread(raw_data_path, header = F, sep="\\", fill=TRUE)[[1L]]
+  
+  
+
   
   ## let R know whether it is FIX or MDP data
   ## For the FIX data  
   
   if(date < as.Date("2015-11-20", "%Y-%m-%d")){
-    Index <- gsub(".*(.*)(35=[^X])(.*)*.","",Index) ## delete 35 is not equal to X
-    Index <- gsub("1128=([^,]*),9=([^,]*),35=([^,]*),49=([^,]*),","",Index)
-    Index <- gsub(",268=([^,]*),",",", Index)
-    Index <- gsub(",22=([^,]*),",",", Index)
-    Index <- gsub(",48=([^,]*),",",",Index)
-    Index <- gsub(",273=([^,]*),",",",Index)
-    Index <- gsub(",336=([^,]*),",",",Index)
-    Index <- gsub(",10=([^,]*),",",",Index)
-    Index <- gsub(",5797=([^,]*),",",",Index)
     
+     
+    Index <- str_subset(data, "\001269=[01]|\001276=RK")
+    rm(data)
+    
+    Index <- str_subset(Index, "\00135=X")
+    Index <- str_replace_all(Index, "\001",",") 
+    
+
+    Index <-  str_replace_all(Index, "1128=([^,]*),9=([^,]*),35=([^,]*),49=([^,]*),", "")
+    Index <-  str_replace_all(Index, ",268=([^,]*),",  ",")
+    Index <-  str_replace_all(Index, ",22=([^,]*),",  ",")
+    Index <-  str_replace_all(Index, ",48=([^,]*),",  ",")
+    Index <-  str_replace_all(Index, ",273=([^,]*),",  ",")
+    Index <-  str_replace_all(Index, ",336=([^,]*),",  ",")
+    Index <-  str_replace_all(Index, ",10=([^,]*),",  ",")
+    Index <-  str_replace_all(Index, ",5797=([^,]*),",  ",")
+    
+
     ##----------------------------------------LOB cleaning-------------------------------------
     ###################################### outright orders only since they have the info of number of orders#################################
     ## we should find the following items
@@ -66,9 +56,9 @@ for (i in 1:length(name)){
       part1_dt <- as.data.table(do.call(rbind, part1_dt))[,-1]
       part1_info <- as.data.table(do.call(rbind,part1_info))[,-1]
       message <- cbind(part1_dt, part1_info)
-      names(message)[c(1:11)] <- c("MsgSeq","Time","Date","Update","Seq","Code","bidask","PX","Qty","Ord","PX_depth")
-      message[, RK := "R"]
-      message <- relocate(message, MsgSeq, .after=RK)
+      names(message)[c(1:11)] <- c("MsgSeq","SendingTime","Date","Update","Seq","Code","Side","PX","Qty","Ord","PX_depth")
+      message[, Implied := "N"]
+
       
     }
     ####################################### Implied orders only #################################################
@@ -86,9 +76,8 @@ for (i in 1:length(name)){
       part2_dt <- as.data.table(do.call(rbind, part2_dt))[,-1]
       part2_info <- as.data.table(do.call(rbind,part2_info))[,-1]
       message_2 <- cbind(part2_dt, part2_info)
-      names(message_2)[c(1:11)] <- c("MsgSeq","Time","Date","Update","Seq","Code","bidask","PX","Qty","RK","PX_depth")
-      message_2 <- relocate(message_2, MsgSeq, .after=RK)
-      message_2[, Ord:= 0]
+      names(message_2)[c(1:11)] <- c("MsgSeq","SendingTime","Date","Update","Seq","Code","Side","PX","Qty","Implied","PX_depth")
+      message_2[, Implied := "Y"]
       
       message_all <- rbind(message, message_2, fill=TRUE)
       
@@ -108,17 +97,27 @@ for (i in 1:length(name)){
         
       }
     }
-    rm(message,message_2,part1_dt,part1_info,part2_dt,part2_info,Index,n_row_part1_info,n_row_part2_info,part1,part2)
-  }else{
-    ## remove the unnecessary tags
     
-    Index <- gsub(".*(.*)(35=[^X])(.*)*.","",Index) ## delete 35 is not equal to X
-    Index <- gsub("1128=([^,]*),9=([^,]*),35=([^,]*),49=([^,]*),","",Index)
-    Index <- gsub(",52=([^,]*),",",",Index) # delete the record time (not the transact time)
-    Index <- gsub(",5799=([^,]*),",",",Index)
-    Index <- gsub(",268=([^,]*),",",", Index)
-    Index <- gsub(",48=([^,]*),",",",Index)
-    Index <- gsub(",10=([^,]*),",",",Index)
+    setcolorder(message_all, c("Date", "MsgSeq", "SendingTime", "Code","Seq","Update", "Side", "PX", "Qty","Ord", "Implied", "PX_depth"))
+    
+    #rm(message,message_2,part1_dt,part1_info,part2_dt,part2_info,Index,n_row_part1_info,n_row_part2_info,part1,part2)
+  }
+  
+  else{
+    ## remove the unnecessary tags
+    Index <- str_subset(data, "\001269=[01EF]")
+    rm(data)
+    
+    Index <- str_subset(Index, "\00135=X")
+    Index <- str_replace_all(Index, "\001",",") 
+    
+    Index <-  str_replace_all(Index, "1128=([^,]*),9=([^,]*),35=([^,]*),49=([^,]*),", "")
+    Index <-  str_replace_all(Index, ",5799=([^,]*),",  ",")
+    Index <-  str_replace_all(Index, ",268=([^,]*),",  ",")
+    Index <-  str_replace_all(Index, ",48=([^,]*),",  ",")
+    Index <-  str_replace_all(Index, ",10=([^,]*),",  ",")
+    
+
     ##----------------------------------------LOB cleaning-------------------------------------
     ###################################### outright orders only since they have the info of number of orders#################################
     ## we should find the following items
@@ -126,18 +125,17 @@ for (i in 1:length(name)){
     if(length(str_subset(Index, "269=[01]"))!=0){
       
       part1 <- str_subset(Index, "279=[012],269=([01]*),") ## find both tag269=0 and tag269=1
-      part1_dt <- str_extract_all(part1,"75=([^,]*),34=([^,]*),60=([^,]*),")
+      part1_dt <- str_extract_all(part1,"75=([^,]*),34=([^,]*),52=([^,]*),60=([^,]*),")
       part1_info <- str_match_all(part1,"279=([^,]*),269=([^,]*),55=([^,]*),83=([^,]*),270=([^,]*),271=([^,]*),346=([^,]*),1023=([^,]*),")
       n_row_part1_info <- sapply(part1_info, nrow)
       part1_dt <- str_dup(part1_dt,n_row_part1_info)
-      part1_dt <- str_match_all(part1_dt, "75=([^,]*),34=([^,]*),60=([^,]*),")
+      part1_dt <- str_match_all(part1_dt, "75=([^,]*),34=([^,]*),52=([^,]*),60=([^,]*),")
       part1_dt <- as.data.table(do.call(rbind, part1_dt))[,-1]
       part1_info <- as.data.table(do.call(rbind,part1_info))[,-1]
       message <- cbind(part1_dt, part1_info)
-      names(message)[c(1:11)] <- c("Date","MsgSeq","Time","Update","bidask","Code","Seq","PX","Qty","Ord","PX_depth")
-      message[, RK:="R"]
-      message <- relocate(message, MsgSeq, .after=RK)
-      message <- relocate(message, Time, .before=Date)
+      names(message)[c(1:12)] <- c("Date","MsgSeq","SendingTime", "TransactTime","Update","Side","Code","Seq","PX","Qty","Ord","PX_depth")
+      message[, Implied:="N"]
+
       
     }
     ####################################### Implied orders only #################################################
@@ -147,20 +145,18 @@ for (i in 1:length(name)){
     if(length(str_subset(Index, "279=[012],269=([EF]*),"))!=0){
       
       part2 <- str_subset(Index, "279=[012],269=([EF]*),") ## find both tag269=0 and tag269=1
-      part2_dt <- str_extract_all(part2,"75=([^,]*),34=([^,]*),60=([^,]*),")
+      part2_dt <- str_extract_all(part2,"75=([^,]*),34=([^,]*),52=([^,]*),60=([^,]*),")
       part2_info <- str_match_all(part2,"279=([^,]*),269=([^,]*),55=([^,]*),83=([^,]*),270=([^,]*),271=([^,]*),1023=([^,]*),")
       n_row_part2_info <- sapply(part2_info, nrow)
       part2_dt <- str_dup(part2_dt,n_row_part2_info)
-      part2_dt <- str_match_all(part2_dt, "75=([^,]*),34=([^,]*),60=([^,]*),")
+      part2_dt <- str_match_all(part2_dt, "75=([^,]*),34=([^,]*),52=([^,]*),60=([^,]*),")
       part2_dt <- as.data.table(do.call(rbind, part2_dt))[,-1]
       part2_info <- as.data.table(do.call(rbind,part2_info))[,-1]
       message_2 <- cbind(part2_dt, part2_info)
-      names(message_2)[c(1:10)] <- c("Date","MsgSeq","Time","Update","bidask","Code","Seq","PX","Qty","PX_depth") 
-      message_2[, RK:="K"]
-      message_2[, Ord:=0]
-      message_2 <- relocate(message_2, Ord, .before=RK)
-      message_2 <- relocate(message_2, MsgSeq, .after=RK)
-      message_2 <- relocate(message_2, Time, .before=Date)
+      names(message_2)[c(1:11)] <- c("Date","MsgSeq","SendingTime","TransactTime", "Update","Side","Code","Seq","PX","Qty","PX_depth") 
+      message_2[, Implied:="Y"]
+
+
       
       message_all <- rbind(message, message_2, fill=TRUE)
       
@@ -182,59 +178,24 @@ for (i in 1:length(name)){
       
       
     }
-    rm(message,message_2,part1_dt,part1_info,part2_dt,part2_info,Index,n_row_part1_info,n_row_part2_info,part1,part2)
+    setcolorder(message_all, c("Date", "MsgSeq", "SendingTime", "TransactTime", "Code","Seq","Update", "Side", "PX", "Qty","Ord", "Implied", "PX_depth"))
+    
+   # rm(message,message_2,part1_dt,part1_info,part2_dt,part2_info,Index,n_row_part1_info,n_row_part2_info,part1,part2)
   }
   
   
-  ######################### extract message of each futures contract and save the results
-  if(exists("message_all")==TRUE){
     
-    contract <- unique(message_all$Code)
+    results <- split(message_all, by="Code")
+    cat("CME MDP 3.0 Quote Messages", "\n", 
+        "contracts:", names(results))
+    return(results)
+
     
-    
-    
-    for (j in 1:length(contract)) {
-      print(contract[j])
-      message_sf <- subset(message_all, message_all$Code==contract[j])
-      
-      #save the message data of each single contract
-      
-      ## delete the file with empty size and create new folders to save data to each folders
-      ## create multiple folders to save the data
-      if(dim(message_sf)[1]!=0){
-        new_fol <- file.path(paste0("saving path","/",contract[j]))
-        
-        if(!dir.exists(new_fol)){
-          dir.create(new_fol)
-        }
-        
-        
-        if(i==339){
-        fname <- file.path(new_fol,
-                           paste0( "header", substr(name[i], 1, 8), "_r_", "48879", "_",contract[j],".rda"))
-        } else{
-          
-          if(epiweek(date)==epiweek(Date[[i-1]])){
-            week_seq1 <- week_seq[i-1]
-            week_seq[i] <- week_seq[i-1]
-            fname <- file.path(new_fol,
-                               paste0("header", substr(name[i], 1, 8), "_r_", week_seq1, "_",contract[j],".rda"))
-            
-          } else{
-            
-            fname <- file.path(new_fol,
-                               paste0("header", substr(name[i], 1, 8), "_r_", week_seq[i], "_",contract[j],".rda"))
-            
-          }
-          
-          
-        }
-        
-        save(message_sf, file = fname) ## save all contracts
-      }
-    }
-  }
+  
 }
+
+
+
 
 
 
