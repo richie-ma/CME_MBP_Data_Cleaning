@@ -1,8 +1,6 @@
-## trade summary
+## dependents: data.table, stringr
 
-
-
-trade_summary <- function(raw_data_path, date, ...){
+trade_summary <- function(raw_data_path, date, price_displayformat=NULL, sunday_raw_data_path=NULL, ...){
   
   date <- as.Date(date)
   
@@ -13,6 +11,9 @@ trade_summary <- function(raw_data_path, date, ...){
   }
   
   data <-  fread(raw_data_path, header = F, sep="\\", fill=TRUE)[[1L]]
+  
+  ### checking the price display factor
+  
   
   if(date < "2015-11-20"){
     
@@ -264,9 +265,37 @@ trade_summary <- function(raw_data_path, date, ...){
     }  
   
   results <- split(trade, by="Code")
+  
+  if(is.null(price_displayformat)){
+    
+    source("C:/Users/ruchuan2/Box/cme.mdp/R/meta_data.R")
+    
+    if(is.null(sunday_raw_data_path)){
+      
+      stop("Sunday's security definition at the same week must be provided to get the price display format")
+    }
+    
+    definition <- meta_data(sunday_raw_data_path, date=date)
+    
+    setnames(definition, "Symbol", "Code")
+    
+    definition <- definition[Code %in% names(results)]
+    
+    results <- lapply(results, function(x) {
+      x[, PX := PX * definition[Code == unique(x$Code), as.numeric(DisplayFactor) ]]
+      return(x)
+    })
+    
+
+    
+  }else{
+    
+   results <- lapply(results, function(x) x[, grep("PX", colnames(x)):=lapply(.SD, function(x) as.numeric(x)*as.numeric(price_displayformat)), .SDcols = patterns("PX")])
+    
+  }
+  
   cat("CME MDP 3.0 Trade Summary", "\n", 
       "contracts:", names(results))
   return(results)
 }
-
 
