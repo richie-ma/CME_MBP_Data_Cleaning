@@ -40,7 +40,6 @@ quote_message <- function(raw_data_path, date, price_displayformat=NULL, sunday_
     Index <-  str_replace_all(Index, ",5797=([^,]*),",  ",")
     
 
-    ##----------------------------------------LOB cleaning-------------------------------------
     ###################################### outright orders only since they have the info of number of orders#################################
     ## we should find the following items
     ## in terms of add tag52 tag75 tag279=0(add) or 1(change) or 2(delete), tag83(sequence), tag107 (Code) tag269=0(bid) or 1(ask), tag270(PX),271(Qty),346(# of orders),1023(PX_depth)
