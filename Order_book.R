@@ -3,7 +3,7 @@
 ##### The user needs to use the processed quote messages in a whole week as the input 
 
 
-order_book <- function(mdp_quote_msgs_list,  level, consolidate, ...){
+order_book <- function(mdp_quote_msgs_list,  level=NULL, consolidate,  sunday_raw_data_path=NULL, ...){
 
 
   ### Order book reconstruction is based on each contract
@@ -41,7 +41,13 @@ order_book <- function(mdp_quote_msgs_list,  level, consolidate, ...){
     message_implied <- messages[Implied=="Y"]
     
     
-    ## outright order book  
+    ## outright order book 
+    
+    if(is.null(level)){
+      source("C:/Users/ruchuan2/Box/cme.mdp/R/meta_data.R")
+      definition <- meta_data(sunday_raw_data_path, date=date)
+      level <- definition[Symbol==messages[, unique(Code)], unique(MarketDepth)]
+    }
     
     if(level %in% c(3, 5, 10)==FALSE){
       
@@ -379,7 +385,20 @@ order_book <- function(mdp_quote_msgs_list,  level, consolidate, ...){
    
     if(isTRUE(consolidate)){
       cat("Consolidated limit order book start...\n")
-    
+      
+      if(dim(LOB_outright)[1]!=0 & exists("LOB_implied")==FALSE){
+        
+        LOB_conso <- as.data.table(LOB_outright)
+        LOB_implied <- NULL
+        cat("No implied orders and the consolidated limit order is the same as the outright limit order book\n")
+        
+      }else if(dim(LOB_implied)[1]!=0 & exists("LOB_outright")==FALSE){
+        
+        LOB_conso <- as.data.table(LOB_implied)
+        LOB_outright <- NULL
+        cat("No outright orders and the consolidated limit order is the same as the implied limit order book\n")
+      }else{
+      
    consolidated_book <- function(LOB_implied, LOB_outright, ...){
    
      #### constructing the consolidated book
@@ -638,23 +657,6 @@ order_book <- function(mdp_quote_msgs_list,  level, consolidate, ...){
      
       
       
-    }else {
-      
-      if(dim(LOB_outright)[1]!=0){
-        
-        LOB_conso <- as.data.table(LOB_outright)
-        cat("No implied orders and the consolidated limit order is the same as the outright limit order book\n")
-       
-      }
-      
-      else if(dim(LOB_implied)[1]!=0){
-        
-        LOB_conso <- as.data.table(LOB_implied)
-        cat("No outright orders and the consolidated limit order is the same as the implied limit order book\n")
-      }
-      
-     
-      
     }
      LOB_conso$Seq <- messages[, "Seq"]
      LOB_conso$MsgSeq <- messages[, "MsgSeq"]
@@ -672,7 +674,8 @@ order_book <- function(mdp_quote_msgs_list,  level, consolidate, ...){
    
    LOB_conso <- consolidated_book(LOB_implied, LOB_outright)
    
-    }else{
+    }
+      }else{
       
       LOB_conso <- NULL
       
@@ -693,7 +696,7 @@ order_book <- function(mdp_quote_msgs_list,  level, consolidate, ...){
    LOB_implied$Code <- message_implied[, "Code"]
   
    results <- list(LOB_conso=LOB_conso, LOB_outright=LOB_outright, LOB_implied=LOB_implied)
-    
+
    return(results)
     }
     
@@ -701,6 +704,6 @@ order_book <- function(mdp_quote_msgs_list,  level, consolidate, ...){
     return(books)
 }
 
-##all_books <- order_book(example_quotes, level=10, consolidate=TRUE)
+
 
 
