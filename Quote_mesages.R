@@ -1,6 +1,6 @@
+## dependents: data.table stringr
 
-
-quote_message <- function(raw_data_path, date, ...){
+quote_message <- function(raw_data_path, date, price_displayformat=NULL, sunday_raw_data_path=NULL, ...){
  
   date <- as.Date(date)
   
@@ -183,9 +183,37 @@ quote_message <- function(raw_data_path, date, ...){
    # rm(message,message_2,part1_dt,part1_info,part2_dt,part2_info,Index,n_row_part1_info,n_row_part2_info,part1,part2)
   }
   
+  results <- split(message_all, by="Code")
   
+  if(is.null(price_displayformat)){
     
-    results <- split(message_all, by="Code")
+    source("C:/Users/ruchuan2/Box/cme.mdp/R/meta_data.R")
+    
+    if(is.null(sunday_raw_data_path)){
+      
+      stop("Sunday's security definition at the same week must be provided to get the price display format")
+    }
+    
+   definition <- meta_data(sunday_raw_data_path, date=date)
+    
+    setnames(definition, "Symbol", "Code")
+    
+    definition <- definition[Code %in% names(results)]
+    
+    results <- lapply(results, function(x) {
+      x[, PX:= as.numeric(PX) * definition[Code == unique(x$Code), as.numeric(DisplayFactor) ]]
+      return(x)
+    })
+    
+    
+    
+  }else{
+    
+    results <- lapply(results, function(x) x[, grep("PX", colnames(x)):=lapply(.SD, function(x) as.numeric(x)*as.numeric(price_displayformat)), .SDcols = patterns("PX")])
+    
+  }
+    
+   
     cat("CME MDP 3.0 Quote Messages", "\n", 
         "contracts:", names(results))
     return(results)
