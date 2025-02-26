@@ -283,7 +283,7 @@ meta_data <- function(sunday_raw_data_path, date, security=NULL){
       
     }
     
-    cat("CME MDP 3.0 Securitity Definition (Meta data)")
+    cat("CME MDP 3.0 Securitity Definition (Meta data)", "\n")
     return(meta_data)
   }
   
