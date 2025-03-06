@@ -44,7 +44,7 @@ order_book <- function(mdp_quote_msgs_list,  level=NULL, consolidate,  sunday_ra
     ## outright order book 
     
     if(is.null(level)){
-      source("C:/Users/ruchuan2/Box/cme.mdp/R/meta_data.R")
+      source("meta_data.R")
       definition <- meta_data(sunday_raw_data_path, date=date)
       level <- definition[Symbol==messages[, unique(Code)], unique(MarketDepth)]
     }
