@@ -150,4 +150,4 @@ tick_bbo <- function(mbp_order_book, trade_summary, trading.tz="America/Chicago"
   
 }
 
-test <- tick_bbo(LOB_date, Trade.sf, start_timestamp = "2019-09-27 09:45:00", end_timestamp = "2019-09-27 09:50:10")
+
