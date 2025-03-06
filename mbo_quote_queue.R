@@ -196,7 +196,7 @@ mbo_quote_queue <- function(raw_data_path,implied_quotes=FALSE,
   
   if(is.null(price_displayformat)){
     
-    source("C:/Users/ruchuan2/Box/cme.mdp/R/meta_data.R")
+    source("meta_data.R")
     
     if(is.null(sunday_raw_data_path)){
       
@@ -227,9 +227,7 @@ mbo_quote_queue <- function(raw_data_path,implied_quotes=FALSE,
       "contracts:", names(MBO))
   return(MBO)
   
-  gc()
- 
 
 }
 
-#test<- mbo_quote_queue("C:/Users/ruchuan2/Box/Corn_MBO/20190106-MBO_xcbt_zc_fut_eth", date="2019-01-06", price_displayformat = 1)
+
