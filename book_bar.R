@@ -220,5 +220,4 @@
   
  }
  
-#  test <- book_bar(outright_book, implied_book, 5, animation = TRUE )
-# anim_save("C:/Users/ruchuan2/Box/cme.mdp/book_bar_conso2.gif", test, res = 200) 
+
