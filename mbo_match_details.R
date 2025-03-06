@@ -175,7 +175,7 @@ MBO.Trade <- split(MBO.Trade, by="Code")
 
 if(is.null(price_displayformat)){
   
-  source("C:/Users/ruchuan2/Box/cme.mdp/R/meta_data.R")
+  source("meta_data.R")
   
   if(is.null(sunday_raw_data_path)){
     
