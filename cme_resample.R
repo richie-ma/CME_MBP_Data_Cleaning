@@ -65,6 +65,8 @@ if(substr(resample_start, 1, 10) != substr(resample_end, 1, 10)){
 
 colnames(mbp_order_book) <- col_names
 attr(mbp_order_book$DT, "tzone") <- trading.tz
+
+cat("CME data resampling to", resample_period, " ", resample_freq)  
 return(mbp_order_book)
 
 }
