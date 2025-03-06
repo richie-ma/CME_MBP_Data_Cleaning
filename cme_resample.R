@@ -70,14 +70,3 @@ return(mbp_order_book)
 }
 
 
-
-
-implied_book <- cme_resample(implied_book, resample_freq = "milliseconds", resample_period = 100,
-                           resample_start = "2016-06-24 11:00:00",
-                           resample_end = "2016-06-24 11:01:00",
-                           fill = TRUE)
-
-outright_book <- cme_resample(outright_book, resample_freq = "milliseconds", resample_period = 100,
-                           resample_start = "2016-06-24 11:00:00",
-                           resample_end = "2016-06-24 11:01:00",
-                           fill = TRUE)
